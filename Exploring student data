@@ -1,0 +1,69 @@
+# Load libraries
+import pandas as pd
+import numpy as np
+import codecademylib3
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Import data
+students = pd.read_csv('students.csv')
+
+# Print first few rows of data
+print(students.head(5))
+
+# Print summary statistics for all columns
+print(students.describe(include='all'))
+
+# Calculate mean; get 10.415
+mean_grade = students.math_grade.mean()
+print(mean_grade)
+
+# Calculate median; get 11.0
+med_grade = students.math_grade.median()
+print(med_grade)
+
+# Calculate mode; get 10
+mode_grade = students.math_grade.mode()[0]
+print(mode_grade)
+
+# Calculate range; get 20
+range_grade = students.math_grade.max() - students.math_grade.min()
+print(range_grade)
+
+# Calculate standard deviation; get 4.581
+sd_grade = students.math_grade.std()
+print(sd_grade)
+
+# Calculate MAD; get 3.429
+mad_grade = students.math_grade.mad()
+print(mad_grade)
+# Create a histogram of math grades
+sns.histplot(x='math_grade', data=students)
+
+plt.show()
+plt.clf()
+
+# Create a box plot of math grades
+sns.boxplot(x='math_grade', data=students)
+
+plt.show()
+plt.clf()
+
+# Calculate number of students with mothers in each job category; most common job was "other", followed by "services"
+count_std = students.Mjob.value_counts()
+print(count_std)
+
+# Calculate proportion of students with mothers in each job category; the proportion of students who have mothers work in "health" was 0.086 or 8.6%
+proport_job = students.Mjob.value_counts(normalize=True)
+print(proport_job)
+
+# Create bar chart of Mjob
+sns.countplot(x='Mjob', data=students)
+
+plt.show()
+plt.clf()
+
+# Create pie chart of Mjob
+students.Mjob.value_counts().plot.pie()
+
+plt.show()
