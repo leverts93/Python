@@ -1,0 +1,92 @@
+import numpy as np
+import pandas as pd
+from scipy.stats import pearsonr, chi2_contingency
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+import codecademylib3
+np.set_printoptions(suppress=True, precision = 2)
+
+nba = pd.read_csv('./nba_games.csv')
+
+# Subset Data to 2010 Season, 2014 Season
+nba_2010 = nba[nba.year_id == 2010]
+nba_2014 = nba[nba.year_id == 2014]
+
+print(nba_2010.head())
+print(nba_2014.head())
+
+# Compare knicks to nets, points earned per game in 2010
+knicks_pts_10 = nba_2010[nba_2010.fran_id == "Knicks"]["pts"]
+nets_pts_10 = nba_2010[nba_2010.fran_id == "Nets"]["pts"]
+
+# Calculate difference between the two teams' average points scored
+diff_means_2010 = knicks_pts_10.mean() - nets_pts_10.mean()
+print(diff_means_2010) #output: 9.7317
+
+# Create histogram to compare points scores for Knicks compared to the Nets using the comparison in 2010
+plt.hist(knicks_pts_10, alpha=0.8, normed=True, label='Knicks')
+plt.hist(nets_pts_10, alpha=0.8, normed=True, label='Nets')
+plt.legend()
+plt.title("2010 Season")
+plt.show()
+
+# Compare knicks to nets, points earned per game in 2014
+knicks_pts_14 = nba_2014[nba_2014.fran_id == "Knicks"]["pts"]
+nets_pts_14 = nba_2014[nba_2014.fran_id == "Nets"]["pts"]
+
+# Calculate difference between the two teams' average points scored
+diff_means_2014 = knicks_pts_14.mean() - nets_pts_14.mean()
+print(diff_means_2014) #output: 0.4471 
+
+# histogram to compare points scores for Knicks compared to the Nets using the comparison in 2014
+plt.hist(knicks_pts_14, alpha=0.8, normed=True, label='Knicks')
+plt.hist(nets_pts_14, alpha=0.8, normed=True, label='Nets')
+plt.legend()
+plt.title("2014 Season")
+plt.show()
+
+#side-by-side boxplots for team vs points scored in 2010
+plt.clf()
+sns.boxplot(data=nba_2010, x='fran_id', y='pts')
+plt.show()
+
+#Calculate table of frequencies showing counts of game_result and game_location
+location_result_freq = pd.crosstab(nba_2010.game_result, nba_2010.game_location)
+print(location_result_freq)
+#output:
+#        A     H
+#    L  133   105
+#    W   92   120
+
+#convert table of frequencies to table of proportions
+location_result_proportions = location_result_freq/len(nba_2010)
+print(location_result_proportions)
+#output:
+#        A     H
+#   L  0.295   0.233
+#   W  0.204   0.266
+
+#Chi-square statistic for COUNTS of game_result and game_location
+chi2, pval, dof, expected = chi2_contingency(location_result_freq)
+print(expected) #output: [[119. 119.]
+#                        [106. 106.]]
+print(chi2) #output: 6.5017; since it's above 5 is has a HIGH association
+
+#Calculate correlation (covariance) between forecast and point_diff
+point_diff_forcast_cov = np.cov(nba_2010.point_diff, nba_2010.forecast)
+print(point_diff_forcast_cov)
+#output: [[186.56  1.37]
+#         [1.37   0.05]]  ; covariance is 1.37
+
+#Calculate strength of correlation (pearsonr) between forecase and point_diff
+point_diff_forecast_corr = pearsonr(nba_2010.point_diff, nba_2010.forecast)
+print(point_diff_forecast_corr)
+#output: 0.4402, 9.4104-23
+
+#scatter plot of forecast vs point_diff
+plt.clf()
+plt.scatter('forecast', 'point_diff', data=nba_2010)
+plt.xlabel('Forcasted Win Prob.')
+plt.ylabel('Point Differential')
+plt.show()
